@@ -1,3 +1,5 @@
+#!/bin/sh
+
 cd ~
 
 # Log WLR errors and logs to the hyprland log. Recommended
