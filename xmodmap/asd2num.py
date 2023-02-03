@@ -12,21 +12,25 @@ def on_press(key):
     global asd2num
     try:
         #if key == keyboard.KeyCode.:
+        print('try')
         if key == keyboard.Key.esc:
             if asd2num == True:
                 print('asd2asd')
-                os.system("sh ~/.config/i3/xmodmap/asd2asd.sh")
+                os.system("bash ~/.config/i3/xmodmap/asd2asd.sh")
                 asd2num = False
+                print('asd2num: ',asd2num)
 
         elif key == keyboard.Key.shift_r:
             if asd2num == False:
                 print('asd2123')
-                os.system("sh ~/.config/i3/xmodmap/asd2123.sh")
+                os.system("bash ~/.config/i3/xmodmap/asd2123.sh")
                 asd2num = True
+                print('asd2num: ',asd2num)
             elif asd2num == True:
                 print('asd2asd')
-                os.system("sh ~/.config/i3/xmodmap/asd2asd.sh")
+                os.system("bash ~/.config/i3/xmodmap/asd2asd.sh")
                 asd2num = False
+                print('asd2num: ',asd2num)
     except:
         print('error!')
 
