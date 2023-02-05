@@ -59,13 +59,16 @@ class target():
         else:
             return False
 
+#保存成文件，或者保存成全局的环境变量
 def save_flag(flag):
     path = '/home/wadekiny/Scripts/keyd/asd2num_flag.txt'
     with open(path,'w') as f:
         if flag : f.write("export _asd2num='ASD2NUM'")
         else :f.write("export _asd2num='NORMAL'")
 
-def remap(flag):
+def remap(flag,waybar_signal = True):
+    print("flag:", flag, "| waybar_signal", waybar_signal)
+    waybar_update_command = "pkill -RTMIN+8 waybar"
     if flag:
         asd = ['a','s','d','f','g','h','j','k','l',';']
         num = ['1','2','3','4','5','6','7','8','9','0']
@@ -74,32 +77,27 @@ def remap(flag):
             subprocess.Popen("keyd -e '{}={}'".format(asd[i],num[i]), shell=True)
             subprocess.Popen("keyd -e '{}={}'".format(num[i],asd[i]), shell=True)
             save_flag(asd2num_flag)
-            # os.system("set -Ux ASD2NUM 1")
     else:
         subprocess.Popen("keyd -e reset", shell=True)
         save_flag(asd2num_flag)
-        # os.system("set -Ux ASD2NUM 0")
+    if waybar_signal:
+        subprocess.Popen(waybar_update_command,shell=True)
 
 
-
-
-
-
-
-
-print('start keyd...')
+print('starting keyd...')
 os.system("sudo systemctl start keyd")
+print('waiting keyd...')
 time.sleep(5) #等待keyd启动
-print('running...')
+print('scanning device...')
 selector = DefaultSelector()
 devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
 for device in devices:
     if "Keyboard" in device.name or "keyboard" in device.name:
         selector.register(device,EVENT_READ)
-        # print(device.path,"--", device.name,"--", device.phys)
+        print(device.path, device.name, device.phys)
     if "keyd virtual" in device.name and "pointer" not in device.name:
         selector.register(device,EVENT_READ)
-        # print(device.path,"--", device.name,"--", device.phys)
+        print(device.path,device.name,device.phys)
 
 
 
@@ -108,16 +106,10 @@ for device in devices:
 # toggle_target = target(100, 1, 0);  #toggle right fn
 quit_target = target(58, 1, 0);    #close  esc
 toggle_target = target(54, 1, 0);  #toggle shift_r
-
 asd2num_flag = False 
-# 保存成文件，或者保存成全局的环境变量
-# os.system("set x ASD2NUM 0") 
-save_flag(asd2num_flag)
 
-
-
-
-waybar_update_command = "pkill -RTMIN+8 waybar"
+print("init all settings")
+remap(asd2num_flag)
 
 try:
     while True:
@@ -132,26 +124,16 @@ try:
                 if quit_target.match_key(event):
                     asd2num_flag = False
         if last_flag != asd2num_flag:
-            # flag更新了
-            #需要root权限 
-            subprocess.Popen(waybar_update_command,shell=True)
-            print(asd2num_flag)
+            # flag更新了 #需要root权限 
             remap(asd2num_flag)
 except:
-    # subprocess.Popen("keyd -e reset", shell=True)
-    os.system("keyd -e reset")
+    remap(False)
     os.system("sudo systemctl stop keyd")
-    save_flag(False)
-    # os.system("set -Ux ASD2NUM 0")
+
 
 
 
 # 问题：需不需要等待子进程完成
-
-
-
-
-
 # os.system("nohup sudo systemctl start keyd &" 可以实现异步执行, 或者subprocess
 # 更改映射，读不到按键了,因为设备变成了keyd virtual device?
 # 相比于不断开启关闭keyd,用keyd -e <expression> 更好
