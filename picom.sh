@@ -1,2 +1,0 @@
-pkill picom
-picom -b
