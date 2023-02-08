@@ -90,7 +90,7 @@ class KeyboardRemap(object):
             if flag:
                 f.write("export _asd2num='ASD2NUM'")
             else:
-                f.write("export _asd2num='NORMAL'")
+                f.write("export _asd2num=''")
 
     def remap(self):
         print("flag:", self._swap_flag, "| waybar_signal", self._waybar_signal_flag)

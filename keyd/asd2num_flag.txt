@@ -1,1 +1,1 @@
-export _asd2num='NORMAL'
+export _asd2num=''
